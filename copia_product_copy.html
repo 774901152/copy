@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copia 产品管理原型</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:#1f1f1f;background:#fff}
+.topbar{height:54px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:flex-end;padding:0 24px;gap:14px}
+.env-text{font-size:14px}.switch{width:38px;height:22px;background:#6d3df5;border-radius:20px;position:relative}.switch:after{content:"";position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;right:2px}.avatar{width:38px;height:38px;border:1px solid #6d3df5;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.page{padding:20px 28px}.page-title{font-size:28px;font-weight:600;margin-bottom:22px}
+.tabs{display:flex;gap:32px;border-bottom:1px solid #e5e5e5;height:48px}.tab{font-size:16px;height:48px;color:#222;cursor:pointer}.tab.active{color:#6d3df5;font-weight:600;border-bottom:2px solid #6d3df5}
+.toolbar{display:flex;justify-content:space-between;margin:16px 0}.search-box{width:360px;height:38px;border:1px solid #ddd;border-radius:7px;display:flex;align-items:center;padding:0 12px}.search-box input{border:0;outline:0;flex:1;font-size:14px}
+.actions{display:flex;gap:12px}.button{height:44px;padding:0 24px;border-radius:7px;cursor:pointer;font-size:16px}.button-primary{background:#6d3df5;color:#fff;border:1px solid #6d3df5}.button-outline{background:#fff;color:#6d3df5;border:2px solid #6d3df5}
+.table{width:100%;border-collapse:collapse;font-size:14px}.table th{text-align:left;color:#666;font-weight:500;height:48px;border-bottom:1px solid #e5e5e5;padding:0 14px}.table td{height:48px;border-bottom:1px solid #e8e8e8;padding:0 14px}.table td:last-child{text-align:center}
+.pagination{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:12px}.page-btn{width:34px;height:34px;border:1px solid #ddd;border-radius:6px;background:#fff}
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;z-index:1000}.modal{width:850px;max-height:90vh;background:#fff;border-radius:10px;box-shadow:0 15px 50px rgba(0,0,0,.2);overflow:hidden;display:flex;flex-direction:column}
+.modal-header{padding:26px 30px 18px;display:flex;justify-content:space-between;align-items:center}.modal-title{font-size:22px;font-weight:600}.close-btn{border:0;background:transparent;font-size:25px;color:#666;cursor:pointer}
+.modal-body{padding:0 30px 20px;overflow-y:auto}.info-box{display:flex;gap:10px;color:#555;font-size:14px;line-height:22px;margin-bottom:22px}.info-icon{width:18px;height:18px;border:1px solid #7992c8;border-radius:50%;color:#5975b2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.product-count{font-size:15px;font-weight:500}.modal-search{width:280px;height:38px;border:1px solid #ddd;border-radius:7px;display:flex;align-items:center;padding:0 12px}.modal-search input{flex:1;border:0;outline:0}
+.product-table-wrapper{border:1px solid #e5e5e5;border-radius:7px;overflow:hidden}.product-table{width:100%;border-collapse:collapse}.product-table th{height:48px;background:#fafafa;text-align:left;font-size:14px;color:#555;font-weight:500;border-bottom:1px solid #e5e5e5;padding:0 14px}.product-table td{height:56px;padding:0 14px;border-bottom:1px solid #ededed;font-size:14px}.product-table tr:last-child td{border-bottom:0}
+.checkbox-cell{width:52px;text-align:center!important}.product-name{width:34%;font-weight:500}.product-id{width:38%;color:#444;font-family:monospace;font-size:13px}.create-date{width:28%;color:#555}
+.checkbox{appearance:none;width:20px;height:20px;border:1px solid #c9c9c9;border-radius:4px;background:#fff;cursor:pointer;position:relative;vertical-align:middle}.checkbox:checked{background:#6d3df5;border-color:#6d3df5}.checkbox:checked:after{content:"✓";color:#fff;font-size:14px;position:absolute;left:3px;top:-1px;font-weight:600}
+.selected-info{margin-top:12px;height:46px;border-radius:6px;background:#f5f7fc;display:flex;align-items:center;padding:0 16px;color:#28346e;font-size:14px;font-weight:500}.modal-footer{padding:18px 30px 26px;display:flex;justify-content:flex-end;gap:12px}
+.cancel-btn{height:40px;min-width:90px;border:1px solid #d9d9d9;background:#fff;border-radius:6px;cursor:pointer}.copy-btn{height:40px;min-width:170px;border:0;background:#6d3df5;color:#fff;border-radius:6px;cursor:pointer}.copy-btn:disabled{background:#d9d9d9;color:#999;cursor:not-allowed}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:6px;font-size:14px;display:none;z-index:2000}.toast.show{display:block}
+.import-area{border:2px dashed #d9d9d9;border-radius:10px;padding:48px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:20px}.import-area:hover{border-color:#6d3df5;background:#faf7ff}.import-area.dragover{border-color:#6d3df5;background:#f0ebff}
+.upload-icon{font-size:42px;margin-bottom:12px;color:#a0a0a0}.upload-text{font-size:16px;color:#333;margin-bottom:6px}.upload-hint{font-size:13px;color:#999}
+#fileInput{display:none}
+.preview-section{display:none}.preview-section.visible{display:block}
+.import-warning{background:#fffbe6;border:1px solid #ffe58f;border-radius:6px;padding:10px 16px;margin-bottom:16px;color:#666;font-size:13px;line-height:18px}.import-warning b{color:#fa8c16}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="switch"></div><span class="env-text">Prod</span><div class="avatar">H</div></div>
+
+<div class="page">
+  <div class="page-title">产品</div>
+  <div class="tabs"><div class="tab" onclick="location.href='copia_entitlement_copy.html'">权益</div><div class="tab active">产品</div><div class="tab">方案</div></div>
+
+  <div class="toolbar">
+    <div class="search-box"><input placeholder="按产品ID或名称搜索"><span>⌕</span></div>
+    <div class="actions">
+      <button class="button button-outline" onclick="openModal()">从沙盒导入</button>
+      <button class="button button-primary">新建产品</button>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead><tr><th>产品名称</th><th>产品ID</th><th>创建日期</th><th>最后更新</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>pro</td><td>pro</td><td>Jul 22, 2026</td><td>Jul 22, 2026</td><td>•••</td></tr>
+      <tr><td>VIP PLATINUM</td><td>vip.platinum</td><td>Jul 17, 2026</td><td>Jul 22, 2026</td><td>•••</td></tr>
+      <tr><td>stripe 权益</td><td>stripe_test_20250615001</td><td>Jul 07, 2026</td><td>Jul 07, 2026</td><td>•••</td></tr>
+      <tr><td>test pro</td><td>test.pro</td><td>Apr 29, 2026</td><td>Jun 08, 2026</td><td>•••</td></tr>
+      <tr><td>VIP GOLD</td><td>vip.gold</td><td>Apr 29, 2026</td><td>Jun 08, 2026</td><td>•••</td></tr>
+      <tr><td>One week user entitlement</td><td>one_week_use_entitlement</td><td>Apr 08, 2026</td><td>Apr 30, 2026</td><td>•••</td></tr>
+      <tr><td>One year user entitlement</td><td>one_year_use_entitlement</td><td>Apr 09, 2026</td><td>Apr 30, 2026</td><td>•••</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="modalMask" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">沙盒产品导入到生产环境</div><button class="close-btn" onclick="closeModal()">×</button></div>
+    <div class="modal-body">
+      <div class="info-box"><div class="info-icon">!</div><div><b>导入规则：</b><br>1. 仅支持导入沙盒存在、生产环境不存在的产品。<br>2. 产品关联权益若在生产环境不存在，将一并导入。<br>3. Apple、Google、Waffo 商店信息将一并导入；Stripe 商店信息不导入，需重新配置 Price ID。</div></div>
+      <div class="modal-toolbar"><div class="product-count">共 6 个产品</div><div class="modal-search"><input id="searchInput" placeholder="搜索产品ID或名称" oninput="renderProducts()"><span>⌕</span></div></div>
+      <div class="product-table-wrapper">
+        <table class="product-table">
+          <thead><tr><th class="checkbox-cell"><input id="selectAll" class="checkbox" type="checkbox" onchange="toggleSelectAll()"></th><th class="product-name">产品名称</th><th class="product-id">产品ID</th><th class="create-date">创建日期</th></tr></thead>
+          <tbody id="productList"></tbody>
+        </table>
+      </div>
+      <div class="selected-info" id="selectedText">已选择 0 个产品</div>
+    </div>
+    <div class="modal-footer"><button class="cancel-btn" onclick="closeModal()">取消</button><button id="importBtn" class="copy-btn" disabled onclick="importProducts()">导入到生产环境</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const products=[
+{name:"VIP PLATINUM",id:"vip.platinum",date:"Jul 17, 2026"},
+{name:"stripe 权益",id:"stripe_test_20250615001",date:"Jul 07, 2026"},
+{name:"test pro",id:"test.pro",date:"Apr 29, 2026"},
+{name:"VIP GOLD",id:"vip.gold",date:"Apr 29, 2026"},
+{name:"One week user entitlement",id:"one_week_use_entitlement",date:"Apr 08, 2026"},
+{name:"One year user entitlement",id:"one_year_use_entitlement",date:"Apr 08, 2026"}
+];
+let selectedProducts=new Set();
+
+function openModal(){document.getElementById("modalMask").style.display="flex";renderProducts()}
+function closeModal(){document.getElementById("modalMask").style.display="none"}
+function renderProducts(){
+ const keyword=document.getElementById("searchInput").value.trim().toLowerCase();
+ const list=document.getElementById("productList");
+ list.innerHTML="";
+ products.filter(p=>p.name.toLowerCase().includes(keyword)||p.id.toLowerCase().includes(keyword)).forEach(p=>{
+   const tr=document.createElement("tr");
+   tr.innerHTML=`<td class="checkbox-cell"><input class="checkbox" type="checkbox" ${selectedProducts.has(p.id)?"checked":""} onchange="toggleProduct('${p.id}')"></td><td class="product-name">${p.name}</td><td class="product-id">${p.id}</td><td class="create-date">${p.date}</td>`;
+   list.appendChild(tr);
+ });
+ updateState();
+}
+function toggleProduct(id){selectedProducts.has(id)?selectedProducts.delete(id):selectedProducts.add(id);updateState();renderProducts()}
+function toggleSelectAll(){
+ const checked=document.getElementById("selectAll").checked;
+ if(checked)products.forEach(p=>selectedProducts.add(p.id));else selectedProducts.clear();
+ renderProducts();
+}
+function updateState(){
+ document.getElementById("selectedText").textContent=`已选择 ${selectedProducts.size} 个产品`;
+ document.getElementById("importBtn").disabled=selectedProducts.size===0;
+ document.getElementById("selectAll").checked=selectedProducts.size===products.length;
+}
+function importProducts(){
+ if(!selectedProducts.size)return;
+ closeModal();
+ const toast=document.getElementById("toast");
+ toast.textContent=`已导入 ${selectedProducts.size} 个产品到生产环境`;
+ toast.classList.add("show");
+ setTimeout(()=>toast.classList.remove("show"),2500);
+}
+document.getElementById("modalMask").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()});
+</script>
+</body>
+</html>
